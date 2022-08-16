@@ -1,0 +1,14 @@
+variables:
+
+  # Pipeline conditions
+  isDev:            ${{ eq(variables['Build.SourceBranch'], 'refs/heads/dev') }}
+  isFeature:        ${{ eq(variables['Build.SourceBranch'], 'refs/heads/feat') }}
+  isFix:            ${{ eq(variables['Build.SourceBranch'], 'refs/heads/fix') }}
+  isMain:           ${{ eq(variables['Build.SourceBranch'], 'refs/heads/main') }}
+  #isProduction:     ${{ eq(variables['Build.SourceBranch'], 'refs/heads/production') }} #Production is not a used branch yet. 
+  isTag:            ${{ startsWith(variables['Build.SourceBranch'], 'refs/tags/v') }}
+  isFork:           ${{ eq(variables['System.PullRequest.IsFork'], 'True') }}
+  isPR:             ${{ eq(variables['Build.Reason'], 'PullRequest') }}
+  isScheduled:      ${{ eq(variables['Build.Reason'], 'Schedule') }}
+  isTrustedCI:      ${{ and( eq(variables.isFork,'False'), eq(variables.isPR,'False'), eq(variables.isScheduled,'False') ) }}
+  deployMain:       ${{ and( eq(variables.isMain,'True'), eq(variables.isTrustedCI,'True') ) }}

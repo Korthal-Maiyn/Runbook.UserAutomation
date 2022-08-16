@@ -1,0 +1,25 @@
+jobs:
+- job: versioning
+  displayName: Bump Version
+  steps:
+  - checkout: self
+    persistCredentials: true
+  - bash: |
+      git config --global user.email "variable"
+      git config --global user.name "variable"
+    displayName: Set Global Git Variables
+  - bash: |
+      sudo npm install -g standard-version
+    displayName: Install standard-version via NPM
+  # If Main Branch v0.x.0
+  - bash: |
+      standard-version --release-as minor
+      git push --follow-tags origin HEAD:$(Build.SourceBranchName)
+    condition: and(succeeded(), eq(variables.isMain, 'true'))
+    displayName: Version as Minor
+  # If Fix or Feature Branch v0.0.x
+  - bash: |
+      standard-version --release-as patch
+      git push --follow-tags origin HEAD:$(Build.SourceBranchName)
+    condition: and(succeeded(), or(eq(variables.isFeature, 'true'), eq(variables.isFix, 'true')))
+    displayName: Version as Patch

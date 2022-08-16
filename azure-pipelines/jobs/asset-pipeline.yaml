@@ -1,0 +1,18 @@
+jobs:
+- job: deploy_runbooks
+  displayName: Deploy Runbooks
+  steps:
+
+  - template: ../steps/debug-vars.yaml
+  
+  - task: PowerShell@2
+    displayName: Connecting to Azure
+    inputs:
+      targetType: 'inline'
+      script: ./scripts/DeployRunbooks.ps1 -ConnectAzure -ResourceGroupName $(ResourceGroupName) -ServicePrincipalName $(ServicePrincipalName) -ServicePrincipalPass $(ServicePrincipalPass) -SubscriptionId $(SubscriptionId) -TenantId $(TenantId) -Verbose
+  
+  - task: PowerShell@2
+    displayName: Deploying Runbooks
+    inputs:
+      targetType: 'inline'
+      script: ./scripts/DeployRunbooks.ps1 -DeployRunbooks -RepoURL $(RepoURL) -RepoAccessToken $(RepoAccessToken) -ResourceGroupName $(ResourceGroupName) -AutomationAccountName $(AutomationAccountName) -Verbose

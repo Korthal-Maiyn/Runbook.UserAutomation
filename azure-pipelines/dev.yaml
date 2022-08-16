@@ -1,0 +1,48 @@
+name: $(BuildID)
+
+trigger:
+  branches:
+    include:
+    - fix/*
+    - feat/*
+    - main
+  tags:
+    include:
+    - v*
+  paths:
+    exclude:
+    - README.md
+
+pr:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+# Variables
+# ---------
+variables:
+- template: vars/global.yaml
+- template: vars/dev.yaml
+
+stages:
+
+# Tests
+# -----
+- stage: Tests
+  displayName: Tests (PowerShell)
+  condition: eq(variables.isTag, 'False')
+  jobs:
+  - template: jobs/tests.yaml
+
+# Build
+# -----
+
+# Deploy
+# ------
+- stage: DeployStage
+  displayName: Deploy Runbook (Azure)
+  condition: or(eq(variables.isTag,'True'), and(succeeded(), eq(variables.isMain, 'True')))
+  jobs:
+  #- template: jobs/version.yaml - Manual local Versioning for now. 
+  - template: jobs/asset-pipeline.yaml

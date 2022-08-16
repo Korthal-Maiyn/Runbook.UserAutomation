@@ -1,0 +1,28 @@
+jobs:
+- job: pester_test
+  displayName: Pester Tests
+  steps:
+  - task: PowerShell@2
+    displayName: 'Executing Pester Tests'
+    inputs:
+      filePath: '$(System.DefaultWorkingDirectory)\Pipelines\PowerShell\Pester.ps1'
+      arguments: '-ModulePath $(System.DefaultWorkingDirectory) -ResultsPath $(System.DefaultWorkingDirectory)\Publish -Publish'
+      errorActionPreference: 'silentlyContinue'
+      ignoreLASTEXITCODE: true
+
+  - task: PublishCodeCoverageResults@1
+    displayName: 'Publish Code Coverage'
+    inputs:
+      codeCoverageTool: 'JaCoCo'
+      summaryFileLocation: '**/Pester-Coverage.xml'
+      pathToSources: '$(System.DefaultWorkingDirectory)\Publish'
+      failIfCoverageEmpty: true
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Pester Tests'
+    inputs:
+      testResultsFormat: 'NUnit'
+      testResultsFiles: '**/Test-Pester.xml'
+      pathToSources: '$(System.DefaultWorkingDirectory)\Publish'
+      mergeTestResults: true
+      failTaskOnFailedTests: true
