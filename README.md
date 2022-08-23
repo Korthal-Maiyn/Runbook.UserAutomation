@@ -1,4 +1,4 @@
-# Melba-UserAutomation
+# UserAutomation
 
 User Onboarding, Offboarding Automation Tool. 
 
